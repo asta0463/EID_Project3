@@ -133,40 +133,43 @@ class MyMainWindow(QtGui.QMainWindow):
             """Read values from the Adafruit sensor for the no. of iterations specified"""
             humidity,temperature = Adafruit_DHT.read_retry(22, 4)
 	    if temperature is not None and humidity is not None :
-	       if self.ui.C==1:
-               	  showtemp="Temperature in degree C is " + str(temperature)
-	       else:
-	          temperature=temperature * 9/5.0 + 32
-	          showtemp="Temperature in degree F is " + str(temperature)
-	       showhum="\nHumidity is : " + str(humidity)
-               """Append values to the local list"""
-               a.append(humidity)
-	       b.append(temperature)
-	       msg='"Temperature" : "{}", "Humidity" : "{}", "Count" : "{}"'.format(temperature,humidity,i)
-	       msg='{'+msg+'}'
-	       myAWSIoTMQTTClient.publish(topic, msg, 1)
-               now = datetime.datetime.now() 
-	       showtime="\nCurrent time is : " + now.strftime("%Y-%m-%d %H:%M:%S") 
-               showtime1=now.strftime("%Y-%m-%d %H:%M:%S")
-               c.append(showtime1)
-	       self.ui.showhum_window.setText(showtemp + showhum + showtime)
-	       item=QtGui.QListWidgetItem("Temp: %f , Humidity: %f , Time: %s" % (temperature,humidity,showtime1))
-               listWidget.addItem(item)
-               if temperature > 100:
+                """Send the Temp (in degree C) and Humidity values to the MQTT client"""
+                msg='"Temperature" : "{}", "Humidity" : "{}", "Count" : "{}"'.format(temperature,humidity,i)
+                msg='{'+msg+'}'
+                myAWSIoTMQTTClient.publish(topic, msg, 1)
+                """Convert the temperature for local display if flag for degree F is set"""
+                if self.ui.C==1:
+                    showtemp="Temperature in degree C is " + str(temperature)
+                else:
+                    temperature= temperature * 9/5.0 + 32
+                    showtemp="Temperature in degree F is " + str(temperature)
+                showhum="\nHumidity is : " + str(humidity)
+                """Append values to the local list"""
+                a.append(humidity)
+                b.append(temperature)
+                now = datetime.datetime.now()
+                showtime="\nCurrent time is : " + now.strftime("%Y-%m-%d %H:%M:%S")
+                showtime1=now.strftime("%Y-%m-%d %H:%M:%S")
+                c.append(showtime1)
+                """Display the Temp, Hum values along with the timestamp on the local QT GUI"""
+                self.ui.showhum_window.setText(showtemp + showhum + showtime)
+                item=QtGui.QListWidgetItem("Temp: %f , Humidity: %f , Time: %s" % (temperature,humidity,showtime1))
+                listWidget.addItem(item)
+                if temperature > 100:
                     w=QtGui.QWidget()
                     result=QtGui.QMessageBox.warning(w, "Message", "Temperature too high")
-               else:
+                else:
                     self.ui.statusbar.showMessage("Temperature optimal",1000000)
-               """insert the values into the table"""
-	       sql = "INSERT INTO INFO(TEMPERATURE, HUMIDITY,TIME) VALUES ('%f', '%f', '%s')" % (temperature,humidity,showtime1)
-	       try:
-                   """Execute the SQL command"""
-	           cursor.execute(sql)
-	           """Commit changes to the database"""
-	           db.commit()
-	       except:
-                   """Rollback in case there is any error"""
-		   db.rollback()
+                """insert the values into the table"""
+                sql = "INSERT INTO INFO(TEMPERATURE, HUMIDITY,TIME) VALUES ('%f', '%f', '%s')" % (temperature,humidity,showtime1)
+                try:
+                    """Execute the SQL command"""
+                    cursor.execute(sql)
+                    """Commit changes to the database"""
+                    db.commit()
+                except:
+                    """Rollback in case there is any error"""
+                    db.rollback()
 	    else:
                 """handling not receiving data"""
                 shownotemp="Sorry, temperature , humidity unavailable . Try again "
