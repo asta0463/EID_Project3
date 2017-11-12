@@ -55,17 +55,17 @@ class MyMainWindow(QtGui.QMainWindow):
 	self.ui.cb.currentIndexChanged.connect(self.Select)
 
 	"""Setting deafult no. of iteratios and Temperature unit"""
-        self.ui.iterations = 5
+        self.ui.iterations = 6
 	self.ui.C = 1    
 
     def Select(self,item):
 	"""method to update the number of iterations with the selected value from the combo box"""
         if item == 0:
-	   self.ui.iterations=5
+	   self.ui.iterations=6
 	elif item == 1:
-	   self.ui.iterations=10
+	   self.ui.iterations=11
 	elif item == 2:
-	   self.ui.iterations=15
+	   self.ui.iterations=16
             
     def Convert(self):
         """method to set change value of Temperature unit conversion variable"""
@@ -172,7 +172,7 @@ class MyMainWindow(QtGui.QMainWindow):
                 shownotemp="Sorry, temperature , humidity unavailable . Try again "
                 self.ui.showhum_window.setText(shownotemp)
             """Wait for 5 seconds before the next reading"""
-            time.sleep(10)
+            time.sleep(5)
         listWidget.show()
         listWidget.exec_()
 
@@ -182,10 +182,9 @@ b=[]
 c=[]     
 
 host = "a1ah5fy1h4v4k9.iot.us-east-1.amazonaws.com"
-rootCAPath = "/home/pi/Desktop/EID/Project3/aws-iot-device-sdk-python/VeriSign-Class 3-Public-Primary-Certification-Authority-G5.pem"
-certificatePath = "/home/pi/Desktop/EID/Project3/aws-iot-device-sdk-python/57ca76974a-certificate.pem.crt"
-privateKeyPath = "/home/pi/Desktop/EID/Project3/aws-iot-device-sdk-python/57ca76974a-private.pem.key"
-#useWebsocket = args.useWebsocket
+rootCAPath = "/home/pi/Desktop/EID_Project3/EID_Project3/Certificates/VeriSign-Class 3-Public-Primary-Certification-Authority-G5.pem"
+certificatePath = "/home/pi/Desktop/EID_Project3/EID_Project3/Certificates/57ca76974a-certificate.pem.crt"
+privateKeyPath = "/home/pi/Desktop/EID_Project3/EID_Project3/Certificates/57ca76974a-private.pem.key"
 clientId = 'iotconsole-1510025171163-0'
 topic = 'P3'
 
@@ -218,9 +217,6 @@ myAWSIoTMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
 myAWSIoTMQTTClient.connect()
 myAWSIoTMQTTClient.subscribe(topic, 1, customCallback)
 time.sleep(2)
-
-
-#myAWSIoTMQTTClient.publish(topic, "Temperature= " + str(loopCount), 1)
     
  
 """connecting to the database"""
