@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
 
-#Lists to maintain the values fetched from the queue
+#Lists to maintain the values fetched from the SQS queue
 AvgT=[]     
 MaxT=[]     
 MinT=[]
@@ -31,13 +31,14 @@ MinH=[]
 LatestH=[]
 
 class MyMainWindow(QtGui.QMainWindow):
-    """main class that contains all the methods required for the GUI""" 
+    """main class that contains all the methods required for the Client side GUI""" 
  
     def __init__(self, parent=None):
         """constructor of class"""
 	QtGui.QWidget.__init__(self, parent)
 	self.ui = Ui_MainWindow()
 	self.ui.setupUi(self)
+	
 	#connecting the push buttons to methods
 	self.ui.request_button.clicked.connect(self.Start)  
 	self.ui.Humgraph_button.clicked.connect(self.HumGraph)
@@ -51,7 +52,7 @@ class MyMainWindow(QtGui.QMainWindow):
         """graph plotting Referenced from a youtube video :https://www.youtube.com/watch?v=Wk7CECwebMc"""
  	plt.cla()
 	ax=self.ui.figure.add_subplot(111)
-	x1=[i for i in range(len(AvgT))]  #iterations on x axis
+	x1=[i for i in range(len(AvgT))]  #value count on x axis
 	x2=[i for i in range(len(MaxT))]
 	x3=[i for i in range(len(MinT))]
 	x4=[i for i in range(len(LatestT))]
@@ -70,7 +71,7 @@ class MyMainWindow(QtGui.QMainWindow):
         """graph plotting Referenced from a youtube video :https://www.youtube.com/watch?v=Wk7CECwebMc"""
         plt.cla()
         ax=self.ui.figure.add_subplot(111)
-        x1=[i for i in range(len(AvgH))]  #iterations on x axis
+        x1=[i for i in range(len(AvgH))]  #value count on x axis
 	x2=[i for i in range(len(MaxH))]
 	x3=[i for i in range(len(MinH))]
 	x4=[i for i in range(len(LatestH))]
@@ -89,7 +90,8 @@ class MyMainWindow(QtGui.QMainWindow):
         """this method gets the messages from the SQS queue and populates a list that pops up"""
 	listWidget=QtGui.QListWidget()
 	listWidget.setWindowTitle("List of Values")
-
+	
+        #Set up the Host URL and Certificates/Keys
         host = "a1ah5fy1h4v4k9.iot.us-east-1.amazonaws.com"
         rootCAPath = "/home/pi/Desktop/EID_Project3/EID_Project3/Certificates/VeriSign-Class 3-Public-Primary-Certification-Authority-G5.pem"
         certificatePath = "/home/pi/Desktop/EID_Project3/EID_Project3/Certificates/57ca76974a-certificate.pem.crt"
@@ -105,7 +107,7 @@ class MyMainWindow(QtGui.QMainWindow):
         streamHandler.setFormatter(formatter)
         logger.addHandler(streamHandler)
 
-        # Init AWSIoTMQTTClient
+        # Initialize AWSIoTMQTTClient
         myAWSIoTMQTTClient = None
         myAWSIoTMQTTClient = AWSIoTMQTTClient(clientId)
         myAWSIoTMQTTClient.configureEndpoint(host,8883)
@@ -143,20 +145,20 @@ class MyMainWindow(QtGui.QMainWindow):
                 WaitTimeSeconds=5
                 )
             try:
-                print('entered')
                 m = messages['Messages'][0]
                 body= m['Body']
-                count=count+1
-                print(body)
+                count=count+1   #Increment the count if successful in fetching the message body
                 att= m['Attributes']
                 timestamp=datetime.datetime.fromtimestamp(float(att['SentTimestamp'])/1000).strftime('%Y-%m-%d %H:%M:%S')
-                print(timestamp)
+                #Fetch the timestamp for the first and last fetched message respectively
                 if count==1:
                     start='Start Timestamp: '+timestamp
                 elif count==30:
                     end='End Timestamp: '+timestamp
                     self.ui.text_window.setText(start+'\n'+end)
+                #Load the message body in JSON format for parsing 
                 d=json.loads(body)
+                #Append each parsed value in the message body into the appropriate lists
                 AvgT.append(d['AvgT'])
                 MinT.append(d['MinT'])
                 MaxT.append(d['MaxT'])
@@ -165,12 +167,15 @@ class MyMainWindow(QtGui.QMainWindow):
                 MinH.append(d['MinH'])
                 MaxH.append(d['MaxH'])
                 LatestH.append(d['LatestH'])
+                #Display the list on the Client Side widget
                 item=QtGui.QListWidgetItem("AvgT: %f , MinT: %f , MaxT: %f , LatestT: %f , AvgH: %f , MinH: %f , MaxH: %f , LatestH: %f, Timestamp: %s" % (d['AvgT'], d['MinT'], d['MaxT'], d['LatestT'], d['AvgH'], d['MinH'], d['MaxH'], d['LatestH'], timestamp))
                 listWidget.addItem(item)
             except KeyError :
+                #This exception is caught if there is an error in fetching any of the values from the SQS message, or if there's an error in fetching the message body itself
                 if count==0:
                     self.ui.text_window.setText('Sorry, no messages in the SQS queue')
                 else:
+                    #Display the end timestamp and indicate how many values were successfully fetched from the queue (since <30 in this case)
                     end='End Timestamp: '+timestamp
                     self.ui.text_window.setText(start+'\n'+end+ '\nOnly '+str(count)+'values in the SQS queue')
                 break
