@@ -43,9 +43,13 @@ class MyMainWindow(QtGui.QMainWindow):
 	self.ui.request_button.clicked.connect(self.Start)  
 	self.ui.Humgraph_button.clicked.connect(self.HumGraph)
 	self.ui.Tempgraph_button.clicked.connect(self.TempGraph)
+	self.ui.CtoF_button.clicked.connect(self.Convert)
 	self.ui.figure=plt.figure(figsize=(15,5))
 	self.ui.canvas=FigureCanvas(self.ui.figure)
 	self.ui.gridLayout.addWidget(self.ui.canvas,1,0,1,2)
+
+        """Set the default value for Temperature Unit"""
+	self.ui.C = 1
        
         
     def TempGraph(self):
@@ -85,6 +89,13 @@ class MyMainWindow(QtGui.QMainWindow):
 	ax.plot(x4,y4,'g.-')				
         ax.set_title('Humidity')
         self.ui.canvas.draw()
+
+    def Convert(self):
+        """method to set change value of Temperature unit conversion variable"""
+        if self.ui.C == 0: 
+           self.ui.C = 1
+        elif self.ui.C == 1:
+           self.ui.C = 0
     	
     def Start(self):
         """this method gets the messages from the SQS queue and populates a list that pops up"""
@@ -134,7 +145,16 @@ class MyMainWindow(QtGui.QMainWindow):
         )
         url = response['QueueUrl']
 
+        #Initialize the count and the Temp, Hum lists
         count=0
+        AvgT[:]=[]     
+        MaxT[:]=[]     
+        MinT[:]=[]
+        LatestT[:]=[]
+        AvgH[:]=[]
+        MaxH[:]=[]
+        MinH[:]=[]
+        LatestH[:]=[]
         #Fetch the messages one by one 
         while count<30:
             messages = client.receive_message(
@@ -158,17 +178,28 @@ class MyMainWindow(QtGui.QMainWindow):
                     self.ui.text_window.setText(start+'\n'+end)
                 #Load the message body in JSON format for parsing 
                 d=json.loads(body)
+                #Convert to degree F if the flag is cleared
+                if self.ui.C==0:
+                    Avg = float(d['AvgT']) * 9/5.0 + 32
+                    Min = float(d['MinT']) * 9/5.0 + 32
+                    Max = float(d['MaxT']) * 9/5.0 + 32
+                    Latest = float(d['LatestT']) * 9/5.0 + 32
+                else:
+                    Avg = float(d['AvgT'])
+                    Min = float(d['MinT'])
+                    Max = float(d['MaxT'])
+                    Latest = float(d['LatestT'])
                 #Append each parsed value in the message body into the appropriate lists
-                AvgT.append(d['AvgT'])
-                MinT.append(d['MinT'])
-                MaxT.append(d['MaxT'])
-                LatestT.append(d['LatestT'])
+                AvgT.append(Avg)
+                MinT.append(Min)
+                MaxT.append(Max)
+                LatestT.append(Latest)
                 AvgH.append(d['AvgH'])
                 MinH.append(d['MinH'])
                 MaxH.append(d['MaxH'])
                 LatestH.append(d['LatestH'])
                 #Display the list on the Client Side widget
-                item=QtGui.QListWidgetItem("AvgT: %f , MinT: %f , MaxT: %f , LatestT: %f , AvgH: %f , MinH: %f , MaxH: %f , LatestH: %f, Timestamp: %s" % (d['AvgT'], d['MinT'], d['MaxT'], d['LatestT'], d['AvgH'], d['MinH'], d['MaxH'], d['LatestH'], timestamp))
+                item=QtGui.QListWidgetItem("AvgT: %f , MinT: %f , MaxT: %f , LatestT: %f , AvgH: %f , MinH: %f , MaxH: %f , LatestH: %f, Timestamp: %s" % (Avg, Min, Max, Latest, d['AvgH'], d['MinH'], d['MaxH'], d['LatestH'], timestamp))
                 listWidget.addItem(item)
             except KeyError :
                 #This exception is caught if there is an error in fetching any of the values from the SQS message, or if there's an error in fetching the message body itself

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'P3.ui'
 #
-# Created: Sat Nov 11 11:37:15 2017
+# Created: Sun Nov 12 14:36:13 2017
 #      by: PyQt4 UI code generator 4.11.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -45,11 +45,14 @@ class Ui_MainWindow(object):
         self.gridLayout.setMargin(0)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.Humgraph_button = QtGui.QPushButton(self.centralwidget)
-        self.Humgraph_button.setGeometry(QtCore.QRect(140, 100, 121, 31))
+        self.Humgraph_button.setGeometry(QtCore.QRect(180, 100, 121, 31))
         self.Humgraph_button.setObjectName(_fromUtf8("Humgraph_button"))
         self.Tempgraph_button = QtGui.QPushButton(self.centralwidget)
-        self.Tempgraph_button.setGeometry(QtCore.QRect(340, 100, 151, 31))
+        self.Tempgraph_button.setGeometry(QtCore.QRect(380, 100, 151, 31))
         self.Tempgraph_button.setObjectName(_fromUtf8("Tempgraph_button"))
+        self.CtoF_button = QtGui.QPushButton(self.centralwidget)
+        self.CtoF_button.setGeometry(QtCore.QRect(10, 100, 101, 31))
+        self.CtoF_button.setObjectName(_fromUtf8("CtoF_button"))
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
@@ -63,4 +66,5 @@ class Ui_MainWindow(object):
         self.request_button.setText(_translate("MainWindow", "Request Data", None))
         self.Humgraph_button.setText(_translate("MainWindow", "Humidity Graph", None))
         self.Tempgraph_button.setText(_translate("MainWindow", "Temperature Graph", None))
+        self.CtoF_button.setText(_translate("MainWindow", "C <-> F", None))
 
