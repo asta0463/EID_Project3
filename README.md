@@ -1,6 +1,6 @@
 AWS with Graphical Client
 ==================================
-Repository for the thid Project of ECEN 5053-002 : Embedded Interface Design   
+Repository for the third Project of ECEN 5053-002 : Embedded Interface Design   
 This project involves communication between 2 Pis that run QT GUIs using applications of the Cloud Platform, Amazon Web Services  .
 
 
