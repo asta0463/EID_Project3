@@ -113,6 +113,8 @@ References
 
 6.http://boto3.readthedocs.io/en/latest/guide/sqs.html
 
-7.AWS Documentation
+7.AWS Documentation and github repository
 
 8.For graphing : https://www.youtube.com/watch?v=Wk7CECwebMc
+
+9.http://www.fhilitski.com/2016/11/temperature-sensor-with-raspberry-pi-3-and-aws/
