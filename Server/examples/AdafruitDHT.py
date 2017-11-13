@@ -21,6 +21,10 @@ import logging
 import time
 import argparse
 import json
+import boto3
+from botocore.exceptions import ClientError
+
+
 
 def customCallback(client, userdata, message):
     print("Received a new message: ")
@@ -176,6 +180,40 @@ class MyMainWindow(QtGui.QMainWindow):
                 self.ui.showhum_window.setText(shownotemp)
             """Wait for 5 seconds before the next reading"""
             time.sleep(5)
+        try:
+			response = client.send_email(
+				Destination={
+					'ToAddresses': [
+						RECIPIENT,
+					],
+				},
+				Message={
+					'Body': {
+						'Html': {
+							'Charset': CHARSET,
+							'Data': BODY_HTML,
+						},
+						'Text': {
+							'Charset': CHARSET,
+							'Data': BODY_TEXT,
+						},
+					},
+					'Subject': {
+						'Charset': CHARSET,
+						'Data': SUBJECT,
+					},
+				},
+				Source=SENDER,
+				# If you are not using a configuration set, comment or delete the
+				# following line
+				#ConfigurationSetName=CONFIGURATION_SET,
+			)
+		# Display an error if something goes wrong.	
+        except ClientError as e:
+			print(e.response['Error']['Message'])
+        else:
+			print("Email sent! Message ID:"),
+			print(response['ResponseMetadata']['RequestId'])
         listWidget.show()
         listWidget.exec_()
 
@@ -185,9 +223,9 @@ b=[]
 c=[]     
 
 host = "a1ah5fy1h4v4k9.iot.us-east-1.amazonaws.com"
-rootCAPath = "/home/pi/Desktop/EID_Project3/EID_Project3/Certificates/VeriSign-Class 3-Public-Primary-Certification-Authority-G5.pem"
-certificatePath = "/home/pi/Desktop/EID_Project3/EID_Project3/Certificates/57ca76974a-certificate.pem.crt"
-privateKeyPath = "/home/pi/Desktop/EID_Project3/EID_Project3/Certificates/57ca76974a-private.pem.key"
+rootCAPath = "/home/pi/Desktop/EID_Project3/Certificates/VeriSign-Class 3-Public-Primary-Certification-Authority-G5.pem"
+certificatePath = "/home/pi/Desktop/EID_Project3/Certificates/57ca76974a-certificate.pem.crt"
+privateKeyPath = "/home/pi/Desktop/EID_Project3/Certificates/57ca76974a-private.pem.key"
 clientId = 'iotconsole-1510025171163-0'
 topic = 'P3'
 
@@ -220,6 +258,44 @@ myAWSIoTMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
 myAWSIoTMQTTClient.connect()
 myAWSIoTMQTTClient.subscribe(topic, 1, customCallback)
 time.sleep(2)
+
+# Replace sender@example.com with your "From" address.
+# This address must be verified with Amazon SES.
+SENDER = "Rhea Cooper <rheabcooper@gmail.com>"
+
+# Replace recipient@example.com with a "To" address. If your account 
+# is still in the sandbox, this address must be verified.
+RECIPIENT = "rhea.cooper@colorado.edu"
+
+AWS_REGION = "us-east-1"
+
+# The subject line for the email.
+SUBJECT = "Amazon SES Test (SDK for Python)"
+
+# The email body for recipients with non-HTML email clients.
+BODY_TEXT = ("Values received on server\r\n"
+             
+            )
+            
+# The HTML body of the email.
+BODY_HTML = """<html>
+<head></head>
+<body>
+  <h1>MQTT msgs sent</h1>
+  <p>This email was sent with
+    <a href='https://aws.amazon.com/ses/'>Amazon SES</a> using the
+    <a href='https://aws.amazon.com/sdk-for-python/'>
+      AWS SDK for Python (Boto)</a>.</p>
+</body>
+</html>
+            """            
+
+# The character encoding for the email.
+CHARSET = "UTF-8"
+
+# Create a new SES resource and specify a region.
+client = boto3.client('ses',region_name=AWS_REGION)
+
     
  
 """connecting to the database"""
