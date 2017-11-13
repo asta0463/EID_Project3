@@ -7,6 +7,7 @@
 ##References:https://github.com/adafruit/Adafruit_Python_DHT
 ##           https://www.tutorialspoint.com/pyqt/pyqt_basic_widgets.htm
 ##           https://www.tutorialspoint.com/python/python_database_access.htm
+##           AWS documentation and github repository
 
 import sys 
 import time 
@@ -204,9 +205,7 @@ class MyMainWindow(QtGui.QMainWindow):
 					},
 				},
 				Source=SENDER,
-				# If you are not using a configuration set, comment or delete the
-				# following line
-				#ConfigurationSetName=CONFIGURATION_SET,
+				
 			)
 		# Display an error if something goes wrong.	
         except ClientError as e:
@@ -256,18 +255,15 @@ myAWSIoTMQTTClient.connect()
 myAWSIoTMQTTClient.subscribe(topic, 1, customCallback)
 time.sleep(2)
 
-# Replace sender@example.com with your "From" address.
 # This address must be verified with Amazon SES.
 SENDER = "Rhea Cooper <rheabcooper@gmail.com>"
 
-# Replace recipient@example.com with a "To" address. If your account 
-# is still in the sandbox, this address must be verified.
 RECIPIENT = "rhea.cooper@colorado.edu"
 
 AWS_REGION = "us-east-1"
 
 # The subject line for the email.
-SUBJECT = "Amazon SES Test (SDK for Python)"
+SUBJECT = "Amazon SES "
 
 # The email body for recipients with non-HTML email clients.
 BODY_TEXT = ("Values received on server\r\n"
