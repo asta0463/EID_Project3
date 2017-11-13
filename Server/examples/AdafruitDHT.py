@@ -1,7 +1,7 @@
 ##  @file: AdafruitDHT.py
-##  @brief: Implementation of the Temperature/Humidity sensing and QT GUI
+##  @brief: Implementation of the Temperature/Humidity sensing and QT GUI, along with transmission via MQTT to AWS IOT
 ##  @Authors: Rhea Cooper, Ashish Tak (University of Colorado, Boulder)
-##  @Date: 10/23/2017
+##  @Date: 11/12/2017
 
 ##!/usr/bin/python
 ##References:https://github.com/adafruit/Adafruit_Python_DHT
@@ -26,13 +26,13 @@ from botocore.exceptions import ClientError
 
 
 
+#Callback function to echo the data sent to the MQTT client
 def customCallback(client, userdata, message):
     print("Received a new message: ")
     print(message.payload)
     print("from topic: ")
     print(message.topic)
     print("--------------\n\n")
-
 
 
 class MyMainWindow(QtGui.QMainWindow):
@@ -58,7 +58,7 @@ class MyMainWindow(QtGui.QMainWindow):
 	self.ui.CtoF_button.clicked.connect(self.Convert)
 	self.ui.cb.currentIndexChanged.connect(self.Select)
 
-	"""Setting deafult no. of iteratios and Temperature unit"""
+	"""Setting deafult no. of iterations and Temperature unit"""
         self.ui.iterations = 6
 	self.ui.C = 1    
 
@@ -159,7 +159,7 @@ class MyMainWindow(QtGui.QMainWindow):
                 self.ui.showhum_window.setText(showtemp + showhum + showtime)
                 item=QtGui.QListWidgetItem("Temp: %f , Humidity: %f , Time: %s" % (temperature,humidity,showtime1))
                 listWidget.addItem(item)
-                if temperature > 100:
+                if temperature > 35:
                     w=QtGui.QWidget()
                     result=QtGui.QMessageBox.warning(w, "Message", "Temperature too high")
                 else:
@@ -222,6 +222,7 @@ a=[]
 b=[]     
 c=[]     
 
+#Set up the Host URL and Certifiactes/Keys
 host = "a1ah5fy1h4v4k9.iot.us-east-1.amazonaws.com"
 rootCAPath = "/home/pi/Desktop/EID_Project3/Certificates/VeriSign-Class 3-Public-Primary-Certification-Authority-G5.pem"
 certificatePath = "/home/pi/Desktop/EID_Project3/Certificates/57ca76974a-certificate.pem.crt"
@@ -229,6 +230,7 @@ privateKeyPath = "/home/pi/Desktop/EID_Project3/Certificates/57ca76974a-private.
 clientId = 'iotconsole-1510025171163-0'
 topic = 'P3'
 
+#Initialize Logger
 logger = logging.getLogger("AWSIoTPythonSDK.core")
 logger.setLevel(logging.DEBUG)
 streamHandler = logging.StreamHandler()
@@ -236,16 +238,11 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 streamHandler.setFormatter(formatter)
 logger.addHandler(streamHandler)
 
-# Init AWSIoTMQTTClient
+# Initialize AWSIoTMQTTClient
 myAWSIoTMQTTClient = None
-if 0:
-    myAWSIoTMQTTClient = AWSIoTMQTTClient(clientId, useWebsocket=True)
-    myAWSIoTMQTTClient.configureEndpoint(host, 443)
-    myAWSIoTMQTTClient.configureCredentials(rootCAPath)
-else:
-    myAWSIoTMQTTClient = AWSIoTMQTTClient(clientId)
-    myAWSIoTMQTTClient.configureEndpoint(host,8883)
-    myAWSIoTMQTTClient.configureCredentials(rootCAPath, privateKeyPath, certificatePath)
+myAWSIoTMQTTClient = AWSIoTMQTTClient(clientId)
+myAWSIoTMQTTClient.configureEndpoint(host,8883)
+myAWSIoTMQTTClient.configureCredentials(rootCAPath, privateKeyPath, certificatePath)
 
 # AWSIoTMQTTClient connection configuration
 myAWSIoTMQTTClient.configureAutoReconnectBackoffTime(1, 32, 20)

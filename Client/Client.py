@@ -1,3 +1,8 @@
+##  @file: Client.py
+##  @brief: Implementation of the Client side GUI, and reception of data from the SQS queue
+##  @Authors: Rhea Cooper, Ashish Tak (University of Colorado, Boulder)
+##  @Date: 11/12/2017
+
 #!/usr/bin/python
 #References: http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-tutorials.html and https://boto3.readthedocs.io/en/latest/index.html
 
@@ -39,7 +44,7 @@ class MyMainWindow(QtGui.QMainWindow):
 	self.ui = Ui_MainWindow()
 	self.ui.setupUi(self)
 	
-	#connecting the push buttons to methods
+	"""connecting the push buttons to methods"""
 	self.ui.request_button.clicked.connect(self.Start)  
 	self.ui.Humgraph_button.clicked.connect(self.HumGraph)
 	self.ui.Tempgraph_button.clicked.connect(self.TempGraph)
@@ -208,7 +213,7 @@ class MyMainWindow(QtGui.QMainWindow):
                 else:
                     #Display the end timestamp and indicate how many values were successfully fetched from the queue (since <30 in this case)
                     end='End Timestamp: '+timestamp
-                    self.ui.text_window.setText(start+'\n'+end+ '\nOnly '+str(count)+'values in the SQS queue')
+                    self.ui.text_window.setText(start+'\n'+end+ '\nOnly '+str(count)+' values in the SQS queue')
                 break
 
 	listWidget.show()
