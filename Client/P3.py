@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'P3.ui'
 #
-# Created: Sun Nov 12 14:36:13 2017
+# Created: Sun Nov 12 19:10:52 2017
 #      by: PyQt4 UI code generator 4.11.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(725, 556)
+        MainWindow.resize(609, 556)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8("../../../../../Project1-EID/pi.jpg")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -39,7 +39,7 @@ class Ui_MainWindow(object):
         self.text_window.setGeometry(QtCore.QRect(120, 10, 461, 71))
         self.text_window.setObjectName(_fromUtf8("text_window"))
         self.gridLayoutWidget = QtGui.QWidget(self.centralwidget)
-        self.gridLayoutWidget.setGeometry(QtCore.QRect(0, 160, 591, 231))
+        self.gridLayoutWidget.setGeometry(QtCore.QRect(10, 160, 591, 231))
         self.gridLayoutWidget.setObjectName(_fromUtf8("gridLayoutWidget"))
         self.gridLayout = QtGui.QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setMargin(0)
@@ -53,6 +53,9 @@ class Ui_MainWindow(object):
         self.CtoF_button = QtGui.QPushButton(self.centralwidget)
         self.CtoF_button.setGeometry(QtCore.QRect(10, 100, 101, 31))
         self.CtoF_button.setObjectName(_fromUtf8("CtoF_button"))
+        self.label = QtGui.QLabel(self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(440, 410, 161, 121))
+        self.label.setObjectName(_fromUtf8("label"))
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
@@ -67,4 +70,5 @@ class Ui_MainWindow(object):
         self.Humgraph_button.setText(_translate("MainWindow", "Humidity Graph", None))
         self.Tempgraph_button.setText(_translate("MainWindow", "Temperature Graph", None))
         self.CtoF_button.setText(_translate("MainWindow", "C <-> F", None))
+        self.label.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" color:#0000ff;\">Average</span></p><p><span style=\" color:#ff0000;\">Maximum</span></p><p><span style=\" color:#ffff00;\">Minimum</span></p><p><span style=\" color:#00aa00;\">Latest</span></p><p><br/></p></body></html>", None))
 
