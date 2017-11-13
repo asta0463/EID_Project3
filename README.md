@@ -88,10 +88,14 @@ The display contains two graphs of the four temperature and humidity values that
 
 Project Additions
 ---------------------------------
-The AWS IOT rule triggers :
-1. A Lambda Node.js function to trigger an SNS notification.A text message containing the incoming temperature and humididty values.is sent to the phone number subscribed to the topic.
-2. A Lambda Node.js function to populate a DynamoDB table with the incoming temperature and humididty values.
-3. An Amazon Kinesis Firehose stream that sends the incoming MQTT messages into an Amazon S3 bucket.
+1.Simple Email Service is used. When the sensor readings are taken in by the Server Pi and MQTT messages are sent, an email is sent. 
+
+2.The AWS IOT rule triggers :
+i) A Lambda Node.js function to trigger an SNS notification.A text message containing the incoming temperature and humididty values.is sent to the phone number subscribed to the topic.
+
+ii) A Lambda Node.js function to populate a DynamoDB table with the incoming temperature and humididty values.
+
+iii) An Amazon Kinesis Firehose stream that sends the incoming MQTT messages into an Amazon S3 bucket.
 
 A block diagram of the flow is present in ExtraCredit.png 
 
